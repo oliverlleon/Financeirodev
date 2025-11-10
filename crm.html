@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>ArchSys - Painel CRM</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#1d4ed8",
+                        "background-light": "#f8fafc",
+                        "background-dark": "#0f172a",
+                        "card-light": "#ffffff",
+                        "card-dark": "#1e293b",
+                        "text-light": "#1e293b",
+                        "text-dark": "#f8fafc",
+                        "subtext-light": "#64748b",
+                        "subtext-dark": "#94a3b8",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.5rem",
+                    },
+                },
+            },
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .view-container {
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark">
+
+    <!-- =========== TELA DE LOGIN =========== -->
+    <div id="login-page" class="view-container flex flex-col justify-center items-center min-h-screen p-6">
+        <div class="w-full max-w-md">
+            <div class="flex items-center justify-center mb-8">
+                <svg class="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.789-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-1.096.906-2.407.906-3.832a8.97 8.97 0 00-1.956-5.328A8.963 8.963 0 0012 5.5a8.963 8.963 0 00-5.978 2.472A8.97 8.97 0 005.068 13.5c0 1.425.261 2.736.906 3.832M15 17a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <h2 class="ml-3 text-2xl font-bold">ArchSys CRM</h2>
+            </div>
+            <div class="bg-card-light dark:bg-card-dark p-8 rounded-lg shadow-md">
+                <h3 class="text-2xl font-bold text-center mb-1">Bem-vindo!</h3>
+                <p class="text-subtext-light dark:text-subtext-dark text-center mb-6">Acesse sua conta para continuar.</p>
+                <form id="user-login-form" class="space-y-6">
+                    <div>
+                        <label for="login-empresa" class="block text-sm font-medium text-subtext-light dark:text-subtext-dark mb-1">Empresa</label>
+                        <select id="login-empresa" name="empresa" required class="w-full px-4 py-2 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="" disabled selected>Selecione a empresa</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="login-usuario" class="block text-sm font-medium text-subtext-light dark:text-subtext-dark mb-1">Usuário</label>
+                        <input id="login-usuario" type="text" placeholder="Digite seu usuário" required class="w-full px-4 py-2 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div>
+                        <label for="login-password" class="block text-sm font-medium text-subtext-light dark:text-subtext-dark mb-1">Senha</label>
+                        <input id="login-password" type="password" placeholder="Digite sua senha" required class="w-full px-4 py-2 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    <div id="user-login-error" class="text-red-500 text-sm text-center"></div>
+                    <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">Entrar</button>
+                </form>
+                <div class="mt-4 text-center">
+                    <a href="#" id="admin-login-link" class="text-sm text-subtext-light dark:text-subtext-dark hover:text-primary">Acesso do Administrador</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========== CONTEÚDO PRINCIPAL DO CRM =========== -->
+    <div id="main-app" class="view-container flex-col min-h-screen">
+        <header class="bg-card-light dark:bg-card-dark shadow-sm">
+            <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 11c0 3.517-1.009 6.789-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-1.096.906-2.407.906-3.832a8.97 8.97 0 00-1.956-5.328A8.963 8.963 0 0012 5.5a8.963 8.963 0 00-5.978 2.472A8.97 8.97 0 005.068 13.5c0 1.425.261 2.736.906 3.832M15 17a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                    <span class="text-xl font-bold">ArchSys CRM</span>
+                </div>
+                <nav class="hidden md:flex items-center space-x-6">
+                    <a class="nav-link text-subtext-light dark:text-subtext-dark hover:text-primary dark:hover:text-primary font-medium cursor-pointer" data-target="dashboard-page">Painel</a>
+                    <a class="nav-link text-subtext-light dark:text-subtext-dark hover:text-primary dark:hover:text-primary font-medium cursor-pointer" data-target="contatos-page">Contatos</a>
+                    <a class="nav-link text-subtext-light dark:text-subtext-dark hover:text-primary dark:hover:text-primary font-medium cursor-pointer" data-target="oportunidades-page">Oportunidades</a>
+                    <a class="nav-link text-subtext-light dark:text-subtext-dark hover:text-primary dark:hover:text-primary font-medium cursor-pointer" data-target="relatorios-page">Relatórios</a>
+                    <a class="nav-link text-subtext-light dark:text-subtext-dark hover:text-primary dark:hover:text-primary font-medium cursor-pointer" data-target="teste-page">Teste</a>
+                </nav>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 rounded-full text-subtext-light dark:text-subtext-dark hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <span class="material-icons">notifications</span>
+                    </button>
+                    <div class="relative">
+                         <button id="profile-button" class="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg">U</button>
+                         <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-card-light dark:bg-card-dark rounded-md shadow-lg py-1 z-10">
+                            <div class="px-4 py-2 text-sm border-b border-gray-200 dark:border-gray-700">
+                                <p class="font-medium text-text-light dark:text-text-dark">Logado como:</p>
+                                <p id="user-display-name" class="truncate text-subtext-light dark:text-subtext-dark"></p>
+                            </div>
+                            <a href="#" id="logout-button" class="block px-4 py-2 text-sm text-subtext-light dark:text-subtext-dark hover:bg-background-light dark:hover:bg-background-dark">Sair</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-grow container mx-auto px-6 py-8">
+            <!-- PÁGINA: DASHBOARD -->
+            <div id="dashboard-page" class="main-page-content">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Painel CRM</h1>
+                    <p class="text-subtext-light dark:text-subtext-dark mt-1">Visão geral dos seus leads, oportunidades e atividades de vendas.</p>
+                </div>
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-text-light dark:text-text-dark">Indicadores de Vendas</h2>
+                        <div class="relative">
+                            <select class="appearance-none bg-card-light dark:bg-card-dark border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-3 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary">
+                                <option>Este Mês</option>
+                                <option>Últimos 30 dias</option>
+                                <option>Este Ano</option>
+                            </select>
+                            <span class="material-icons absolute right-3 top-1/2 -translate-y-1/2 text-subtext-light dark:text-subtext-dark pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-full">
+                                    <span class="material-icons text-yellow-500 dark:text-yellow-400">person_add</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-subtext-light dark:text-subtext-dark">Novos Leads</p>
+                                    <p class="text-2xl font-bold text-text-light dark:text-text-dark">128</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-full">
+                                    <span class="material-icons text-blue-500 dark:text-blue-400">monetization_on</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-subtext-light dark:text-subtext-dark">Oportunidades Abertas</p>
+                                    <p class="text-2xl font-bold text-text-light dark:text-text-dark">R$ 45.800,00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm">
+                            <div class="flex items-center space-x-4">
+                                <div class="p-3 bg-green-100 dark:bg-green-900/50 rounded-full">
+                                    <span class="material-icons text-green-500 dark:text-green-400">check_circle</span>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-subtext-light dark:text-subtext-dark">Taxa de Conversão</p>
+                                    <p class="text-2xl font-bold text-text-light dark:text-text-dark">25%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Módulos</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Contatos</h3>
+                                <p class="text-sm text-subtext-light dark:text-subtext-dark mt-1 mb-4 max-w-xs">Gerencie seus clientes, leads e fornecedores em um único lugar.</p>
+                                <a class="bg-primary text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" href="#">Acessar</a>
+                            </div>
+                            <img alt="Ilustração de contatos" class="w-32 h-32 object-cover rounded-md hidden sm:block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr_H4tqVsVkIFKzYF_rdeEEuSOHNyb9hafrkk__qMSnCLC5XzZ1E53Zgm6Jh63AE245xOV-j7GPr6QHlJJ8V8fAwWjM8owgUVAUso9_6ivEnockmXt5e7bhQ3VtdJCB_8_gH_gAjRE7sueKA1uba4KQ1eKKx-tnXoHi6GkBn9yTl54o5N4_7qcWd5TdZ1Gv1IzvA3AYSHSoxgFdlNWo_FdaiaRSLjolAjqP7JpbMzNqq6lK7oUDX5mce9sPs2tZFDp1h-p50KIBOE" />
+                        </div>
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Oportunidades</h3>
+                                <p class="text-sm text-subtext-light dark:text-subtext-dark mt-1 mb-4 max-w-xs">Acompanhe o funil de vendas e o progresso de cada negociação.</p>
+                                <a class="bg-primary text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" href="#">Acessar</a>
+                            </div>
+                            <img alt="Ilustração de carrinho de compras" class="w-32 h-32 object-cover rounded-md hidden sm:block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhBN_8cO3VMAFS5-0WSqiyT8qpq6OG1qZxD8YW8D1k8SvA63D9XHJLzsKGE6LT_87y7WIFyQCSCYi3D0CAWjE-tD2laCLyZtBknwQK71nvmj2MJ0crn3C5YiTHw5ic_3RujzL5f5H0J6LoGxBoKlnjXBj1AhHK8ixxKpxuInT9G7EecHVnYHfyY5vVkpmV_G0s9OZi--R2tQonrsh4fWqsSFlxhFxpav2rAzKl2sZfi5XP0usRYYVAbCHNaFz65HmCgoM46UZvreo" />
+                        </div>
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Tarefas</h3>
+                                <p class="text-sm text-subtext-light dark:text-subtext-dark mt-1 mb-4 max-w-xs">Gerencie suas atividades, reuniões e follow-ups de vendas.</p>
+                                <a class="bg-primary text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" href="#">Acessar</a>
+                            </div>
+                            <img alt="Ilustração de moedas" class="w-32 h-32 object-cover rounded-md hidden sm:block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYmC5w9lMVghDV7eo0tbnMoVdcQIM4WymqfRnQJrJ70BqtDgtob4CAu1rI5WlDNoVM_Ik9kYYkVIloSEUWjQjpLtfVD3ooRzxKiWnNWGNnmDQmH3_MJpWQho7IynMAhsuPhiv-7GaRU9Zud9Kqb2B5uqW24i7T1gZg_o1pkXTs2lk4tMsadKe6eMY_0_pYCjhLuIYttXw_qnWucpb6svE_7NEubnmhwoPkCpAqM-pu5gphHKnF483Ey0dq6x0fzAcQhp73DP4N07g" />
+                        </div>
+                        <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm flex items-center justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-text-light dark:text-text-dark">Relatórios</h3>
+                                <p class="text-sm text-subtext-light dark:text-subtext-dark mt-1 mb-4 max-w-xs">Analise o desempenho da sua equipe e tome decisões baseadas em dados.</p>
+                                <a class="bg-primary text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors" href="#">Acessar</a>
+                            </div>
+                            <img alt="Ilustração de um gráfico" class="w-32 h-32 object-cover rounded-md hidden sm:block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV2TU7GJjuHIQI8Ara10zq-pxXsOy9O38XrtNOUShXzOxNmm9223NfXjGE3kYrgri8aWyBQdQ1aT6qXBr1ckCkPKcZRJz1GQfjE9sscJSD92B2HvSmV9qlNHhJfeWEinM3lL4dwBAYh6Ns1w7ua_bZIprhA737TTc28Wi1qs-sQemcXrqQ-Sa1bfmj2hw_QgkNgUD8r2qu6G81_gl9D48Df3MtZ0l6dt-4Osp-apTs-9UKEbiX5m6h-7NOOb_W8PBUra5yEDS7jIA" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PÁGINA: TESTE (nova) -->
+            <div id="teste-page" class="main-page-content hidden">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-text-light dark:text-text-dark">Página de Teste</h1>
+                    <p class="text-subtext-light dark:text-subtext-dark mt-1">Use esta página para testar a integração com o Firebase.</p>
+                </div>
+
+                <div class="bg-card-light dark:bg-card-dark p-6 rounded-lg shadow-sm">
+                    <h2 class="text-xl font-semibold text-text-light dark:text-text-dark mb-4">Salvar Dados no CRM</h2>
+                    <form id="test-form" class="flex items-center gap-4">
+                        <input id="test-input" type="text" placeholder="Digite uma informação de teste" required class="flex-grow w-full px-4 py-2 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                        <button type="submit" class="bg-primary text-white py-2 px-6 rounded-md font-medium hover:bg-blue-700 transition-colors">Salvar</button>
+                    </form>
+                    <div id="test-form-feedback" class="text-sm mt-4"></div>
+
+                    <div class="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h3 class="text-lg font-medium text-text-light dark:text-text-dark mb-4">Dados Salvos (em tempo real)</h3>
+                        <div id="test-data-display" class="space-y-2 p-4 bg-background-light dark:bg-background-dark rounded-md min-h-[100px]">
+                            <p class="text-subtext-light dark:text-subtext-dark">Aguardando dados...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outras páginas (Contatos, Oportunidades, etc.) podem ser adicionadas aqui no mesmo padrão -->
+            <div id="contatos-page" class="main-page-content hidden"><h1 class="text-3xl font-bold">Página de Contatos</h1></div>
+            <div id="oportunidades-page" class="main-page-content hidden"><h1 class="text-3xl font-bold">Página de Oportunidades</h1></div>
+            <div id="relatorios-page" class="main-page-content hidden"><h1 class="text-3xl font-bold">Página de Relatórios</h1></div>
+
+        </main>
+    </div>
+
+    <!-- =========== MODAL DE LOGIN ADMIN =========== -->
+    <div id="admin-login-modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-card-light dark:bg-card-dark">
+            <div class="flex justify-between items-center border-b pb-3 dark:border-gray-600">
+                <h3 class="text-2xl font-bold">Acesso do Administrador</h3>
+                <button id="close-admin-modal-btn" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="admin-login-form" class="space-y-6 mt-6">
+                <div>
+                    <label for="admin-login-email" class="block text-sm font-medium text-subtext-light dark:text-subtext-dark mb-1">E-mail</label>
+                    <input id="admin-login-email" type="email" placeholder="seu@email.com" required class="w-full px-4 py-2 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div>
+                    <label for="admin-login-password" class="block text-sm font-medium text-subtext-light dark:text-subtext-dark mb-1">Senha</label>
+                    <input id="admin-login-password" type="password" placeholder="Digite sua senha" required class="w-full px-4 py-2 bg-background-light dark:bg-background-dark border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                <div id="admin-login-error" class="text-red-500 text-sm text-center"></div>
+                <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-md font-medium hover:bg-blue-700 transition-colors">Entrar como Admin</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script type="module">
+        // Importações do Firebase SDK
+        import {
+            initializeApp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            query,
+            where,
+            getDocs,
+            doc,
+            addDoc,
+            serverTimestamp,
+            onSnapshot
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuração do Firebase (a mesma do seu ERP)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDc7VXTjm1fyKerBWKh-5b6Co17jDlFHFo",
+            authDomain: "controle-financeio-85742.firebaseapp.com",
+            projectId: "controle-financeio-85742",
+            storageBucket: "controle-financeio-85742.firebasestorage.app",
+            messagingSenderId: "855241987878",
+            appId: "1:855241987878:web:7b89f1b734bd0ca20e93e7",
+            measurementId: "G-3QY0LMZN7E"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // --- Variáveis de estado globais ---
+        let effectiveUserId = null;
+        let currentUserName = null;
+        let testDataUnsubscribe = null;
+
+        // --- Elementos do DOM ---
+        const loginPage = document.getElementById('login-page');
+        const mainApp = document.getElementById('main-app');
+        const userLoginForm = document.getElementById('user-login-form');
+        const userLoginError = document.getElementById('user-login-error');
+        const loginEmpresaSelect = document.getElementById('login-empresa');
+
+        const adminLoginLink = document.getElementById('admin-login-link');
+        const adminLoginModal = document.getElementById('admin-login-modal');
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const adminLoginError = document.getElementById('admin-login-error');
+        const closeAdminModalBtn = document.getElementById('close-admin-modal-btn');
+        
+        const userDisplayName = document.getElementById('user-display-name');
+        const profileButton = document.getElementById('profile-button');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const logoutButton = document.getElementById('logout-button');
+        
+        const navLinks = document.querySelectorAll('.nav-link');
+        const mainPageContents = document.querySelectorAll('.main-page-content');
+
+        // --- Elementos da página de Teste ---
+        const testForm = document.getElementById('test-form');
+        const testInput = document.getElementById('test-input');
+        const testDataDisplay = document.getElementById('test-data-display');
+        const testFormFeedback = document.getElementById('test-form-feedback');
+
+
+        // --- Funções Auxiliares ---
+        function showView(viewId) {
+            document.querySelectorAll('.view-container').forEach(view => {
+                if (view.id === viewId) {
+                    view.style.display = 'flex';
+                } else {
+                    view.style.display = 'none';
+                }
+            });
+        }
+        
+        function showPageContent(targetId) {
+             mainPageContents.forEach(content => {
+                if (content.id === targetId) {
+                    content.classList.remove('hidden');
+                } else {
+                    content.classList.add('hidden');
+                }
+            });
+        }
+
+        function showFeedback(element, message, isError = false) {
+            if (element) {
+                element.textContent = message;
+                element.className = isError ? 'text-red-500 text-sm text-center' : 'text-green-500 text-sm text-center';
+            }
+        }
+        
+        // --- Lógica de Navegação Principal ---
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const targetId = e.currentTarget.dataset.target;
+                if(targetId) {
+                    showPageContent(targetId);
+                }
+            });
+        });
+        
+        profileButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+        });
+
+        window.addEventListener('click', () => {
+            if(!profileDropdown.classList.contains('hidden')) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
+
+
+        // --- Lógica de Autenticação ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) { // Admin do Firebase logado
+                effectiveUserId = user.uid;
+                currentUserName = user.email;
+                initializeAppUI();
+            } else if (sessionStorage.getItem('companyUser')) { // Usuário comum (não-admin) logado
+                const sessionData = JSON.parse(sessionStorage.getItem('companyUser'));
+                effectiveUserId = sessionData.adminId;
+                currentUserName = sessionData.userName;
+                initializeAppUI();
+            } else { // Ninguém logado
+                showView('login-page');
+                mainApp.style.display = 'none';
+                detachAllListeners();
+            }
+        });
+
+        // Login de usuário comum
+        userLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            userLoginError.textContent = '';
+            const empresaId = loginEmpresaSelect.value;
+            const nomeUsuario = document.getElementById('login-usuario').value;
+            const senha = document.getElementById('login-password').value;
+
+            if (!empresaId) {
+                showFeedback(userLoginError, 'Por favor, selecione uma empresa.', true);
+                return;
+            }
+
+            try {
+                const q = query(
+                    collection(db, "acessos"),
+                    where("empresaId", "==", empresaId),
+                    where("login", "==", nomeUsuario),
+                    where("senha", "==", senha) // AVISO: Inseguro, mas mantendo a lógica do ERP
+                );
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    showFeedback(userLoginError, 'Empresa, usuário ou senha inválidos.', true);
+                    return;
+                }
+                
+                const userDoc = querySnapshot.docs[0].data();
+                
+                // TODO: Adicionar lógica de primeiro acesso se necessário
+                
+                const sessionData = {
+                    adminId: userDoc.adminId,
+                    userName: userDoc.nomeUsuario
+                };
+                sessionStorage.setItem('companyUser', JSON.stringify(sessionData));
+                
+                effectiveUserId = userDoc.adminId;
+                currentUserName = userDoc.nomeUsuario;
+                initializeAppUI();
+
+            } catch (error) {
+                console.error("Erro no login do usuário:", error);
+                showFeedback(userLoginError, 'Ocorreu um erro. Tente novamente.', true);
+            }
+        });
+        
+        // Modal de login do Admin
+        adminLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            adminLoginModal.classList.remove('hidden');
+        });
+        closeAdminModalBtn.addEventListener('click', () => adminLoginModal.classList.add('hidden'));
+
+        adminLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            adminLoginError.textContent = '';
+            const email = document.getElementById('admin-login-email').value;
+            const password = document.getElementById('admin-login-password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                adminLoginModal.classList.add('hidden');
+            } catch (error) {
+                showFeedback(adminLoginError, 'E-mail ou senha inválidos.', true);
+            }
+        });
+
+        // Logout
+        logoutButton.addEventListener('click', async () => {
+             if (sessionStorage.getItem('companyUser')) {
+                sessionStorage.removeItem('companyUser');
+                window.location.reload();
+            } else {
+                await signOut(auth);
+            }
+        });
+
+        // --- Lógica da Aplicação Após Login ---
+        function initializeAppUI() {
+            if (!effectiveUserId) return;
+            showView('main-app');
+            showPageContent('dashboard-page');
+            userDisplayName.textContent = currentUserName;
+            
+            // Ativa os listeners do Firebase para a aplicação
+            attachTestDataListener();
+        }
+
+        function detachAllListeners() {
+            if(testDataUnsubscribe) {
+                testDataUnsubscribe();
+                testDataUnsubscribe = null;
+            }
+        }
+
+        // --- Lógica da Página de Teste ---
+        function attachTestDataListener() {
+            if (testDataUnsubscribe) testDataUnsubscribe(); // Garante que não haja listeners duplicados
+
+            // CORREÇÃO: Estrutura de coleção aninhada para organização
+            const testCollectionRef = collection(db, 'users', effectiveUserId, 'crm', 'data', 'testes');
+            testDataUnsubscribe = onSnapshot(testCollectionRef, (snapshot) => {
+                if (snapshot.empty) {
+                    testDataDisplay.innerHTML = '<p class="text-subtext-light dark:text-subtext-dark">Nenhum dado salvo ainda.</p>';
+                    return;
+                }
+                
+                testDataDisplay.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const dataElement = document.createElement('div');
+                    dataElement.className = 'p-2 border-b border-gray-200 dark:border-gray-700';
+                    dataElement.textContent = `ID: ${doc.id} - Valor: ${data.info}`;
+                    testDataDisplay.appendChild(dataElement);
+                });
+            });
+        }
+
+        testForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if(!effectiveUserId) {
+                showFeedback(testFormFeedback, 'Erro: Usuário não autenticado.', true);
+                return;
+            }
+            
+            const info = testInput.value.trim();
+            if (!info) {
+                 showFeedback(testFormFeedback, 'Por favor, insira uma informação.', true);
+                return;
+            }
+
+            try {
+                // CORREÇÃO: Estrutura de coleção aninhada para organização
+                const testCollectionRef = collection(db, 'users', effectiveUserId, 'crm', 'data', 'testes');
+                await addDoc(testCollectionRef, {
+                    info: info,
+                    createdAt: serverTimestamp()
+                });
+                showFeedback(testFormFeedback, 'Dado salvo com sucesso!', false);
+                testForm.reset();
+            } catch (error) {
+                console.error("Erro ao salvar dado de teste:", error);
+                showFeedback(testFormFeedback, 'Erro ao salvar o dado.', true);
+            }
+        });
+        
+        // --- Inicialização da Página ---
+        async function populateEmpresasLogin() {
+            try {
+                const q = query(collection(db, "empresas"));
+                const querySnapshot = await getDocs(q);
+                loginEmpresaSelect.innerHTML = '<option value="" disabled selected>Selecione a empresa</option>';
+                querySnapshot.forEach((doc) => {
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = doc.data().nome;
+                    loginEmpresaSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar empresas: ", error);
+            }
+        }
+        
+        populateEmpresasLogin();
+
+    </script>
+</body>
+
+</html>
+
